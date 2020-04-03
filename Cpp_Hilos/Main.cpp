@@ -8,45 +8,38 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 
-void hello();
-void do_something();
-void do_something_else();
+void oops();
+void do_something(int i);
+
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
-    //std::cin.ignore();
-    int size = 1024;
-    std::vector<int> a(size);
-
-    std::thread t(hello);
-    t.join();
-
-    //background_task f;
-
-   // std::thread my_thread{ background_task() };
-
-
     
-    std::thread my_thread([] {
-        do_something();
-        do_something_else();
-        });
-
-    my_thread.join();
-
+    oops();
     return 0;    
 }
-void hello()
-{
-    std::cout << "Hello Concurrent World\n";
-}
 
-void do_something() 
+struct func
 {
-    std::cout << "Hello, World cosa!" << std::endl;
-}
-void do_something_else() 
+    int& i;
+    func(int& i_) :i(i_) {}
+    void operator()()
+    {
+        for (unsigned j = 0; j < 100; ++j)
+        {
+            do_something(i);
+        }
+    }
+};
+void oops()
 {
-    std::cout << "Hello, World cosa_2!" << std::endl;
+    int some_local_state = 0;
+    func my_func(some_local_state);
+    std::thread my_thread(my_func);
+    //my_thread.detach();
+    my_thread.join();
+    std::cout << "Hello, World something!" << std::to_string(some_local_state) << std::endl;
 }
-
+void do_something(int i)
+{
+    //std::cout << "Hello, World something!" << std::to_string(i) << std::endl;
+}
